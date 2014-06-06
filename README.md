@@ -32,3 +32,4 @@ Todo
 ====
 
 Currently, the project will build as logstash-contrib which isn't what we want :)
+You'll also notice that the bundler will want to be included. :(
