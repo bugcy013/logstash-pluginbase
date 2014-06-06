@@ -1,6 +1,7 @@
 #
 JRUBY_VERSION=1.7.11
 
+LS_PROJECT=$(shell awk '/gem.name/ {print $$3}' logstash-contrib.gemspec | sed 's/"//g')
 WITH_JRUBY=java -jar $(shell pwd)/$(JRUBY) -S
 JRUBY=vendor/jar/jruby-complete-$(JRUBY_VERSION).jar
 JRUBY_URL=http://jruby.org.s3.amazonaws.com/downloads/$(JRUBY_VERSION)/jruby-complete-$(JRUBY_VERSION).jar
@@ -143,10 +144,10 @@ build/tarball/logstash-%: | build/tarball
 	mkdir $@
 
 show:
-	echo $(VERSION)
+	echo $(LS_PROJECT) - $(VERSION)
 
 .PHONY: prepare-tarball
-prepare-tarball tarball zip: WORKDIR=build/tarball/logstash-contrib-$(VERSION)
+prepare-tarball tarball zip: WORKDIR=build/tarball/$(LS_PROJECT)-$(VERSION)
 prepare-tarball: vendor-gems
 prepare-tarball:
 	@echo "=> Preparing tarball"
@@ -155,23 +156,23 @@ prepare-tarball:
 #	$(QUIET)sed -i -e 's/^LOGSTASH_VERSION = .*/LOGSTASH_VERSION = "$(VERSION)"/' $(WORKDIR)/lib/logstash/version.rb
 
 .PHONY: tarball
-tarball: | build/logstash-contrib-$(VERSION).tar.gz
-build/logstash-contrib-$(VERSION).tar.gz: | prepare-tarball
+tarball: | build/$(LS_PROJECT)-$(VERSION).tar.gz
+build/$(LS_PROJECT)-$(VERSION).tar.gz: | prepare-tarball
 	$(QUIET)tar -C $$(dirname $(WORKDIR)) -c $$(basename $(WORKDIR)) \
 		| gzip -9c > $@
 	@echo "=> tarball ready: $@"
 
 .PHONY: zip
-zip: | build/logstash-contrib-$(VERSION).zip
-build/logstash-contrib-$(VERSION).zip: | prepare-tarball
+zip: | build/$(LS_PROJECT)-$(VERSION).zip
+build/$(LS_PROJECT)-$(VERSION).zip: | prepare-tarball
 	$(QUIET)(cd $$(dirname $(WORKDIR)); find $$(basename $(WORKDIR)) | zip $(PWD)/$@ -@ -9)$(QUIET_OUTPUT)
 	@echo "=> zip ready: $@"
 
 .PHONY: tarball-test
-tarball-test: #build/logstash-contrib-$(VERSION).tar.gz
+tarball-test: #build/$(LS_PROJECT)-$(VERSION).tar.gz
 	$(QUIET)-rm -rf build/test-tarball/
 	$(QUIET)mkdir -p build/test-tarball/
-	tar -C build/test-tarball --strip-components 1 -xf build/logstash-contrib-$(VERSION).tar.gz
+	tar -C build/test-tarball --strip-components 1 -xf build/$(LS_PROJECT)-$(VERSION).tar.gz
 	(cd build/test-tarball; bin/logstash rspec $(TESTS) --fail-fast)
 
 package: | tarball
