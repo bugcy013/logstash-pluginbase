@@ -3,6 +3,13 @@ logstash-pluginbase
 
 A base repo to make logstash plugins.
 
+Create
+======
+
+Depending on what you're trying to build, place your ruby files in one of the lib/logstash/ directories.
+Don't forget to remove the others. 
+
+
 Gem Dependencies
 ================
 
