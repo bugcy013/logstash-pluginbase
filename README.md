@@ -13,7 +13,7 @@ Don't forget to remove the others.
 Gem Dependencies
 ================
 
-To add a Ruby Gem dependancy, modify the logstash-contrib.gemspec file and add something like the following:
+To add a Ruby Gem dependancy, modify the logstash-contrib.gemspec file and add something like the following before the end tag:
 
 gem.add_runtime_dependency "net-http-persistent"
 
